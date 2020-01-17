@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "417924933260",
+    "firebase_url": "https://insta-album.firebaseio.com",
+    "project_id": "insta-album",
+    "storage_bucket": "insta-album.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417924933260:android:59cbb10589e898c60f7da9",
+        "android_client_info": {
+          "package_name": "com.insta_album_new"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "417924933260-kjkgp5t354a746rg18cu392ma1fl1ni9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6zodyTetpGDVqJR27soivgUMCGb0lrwY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "417924933260-kjkgp5t354a746rg18cu392ma1fl1ni9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
