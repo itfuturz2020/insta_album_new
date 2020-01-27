@@ -25,7 +25,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  // This widget is the root of your application.
+  // This widget is th e root of your application.
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'The Insta Album',
+      title: 'Photo Cloud',
       initialRoute: '/',
       routes: {
         '/': (context) => Splash(),

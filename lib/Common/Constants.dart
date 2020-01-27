@@ -43,6 +43,7 @@ class Session{
   static const String IsVerified = "IsVerified";
   static const String StudioId = "StudioId";
   static const String Type = "Type";
+  static const String PinSelection = "PinSelection";
 
   static const String Photo = "Photo";
 

@@ -65,7 +65,7 @@ class _AllAlbumComponentState extends State<AllAlbumComponent> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.onChange("Show", widget.index);
+        widget.onChange("Show", widget.index,widget.albumData["Photo"].toString());
       },
       child: Container(
         padding: EdgeInsets.all(0),
@@ -114,13 +114,13 @@ class _AllAlbumComponentState extends State<AllAlbumComponent> {
                               widget.albumData["IsSelected"] = "false";
                             });
                             widget.onChange(
-                                "Remove", widget.albumData["Id"].toString());
+                                "Remove", widget.albumData["Id"].toString(),widget.albumData["Photo"].toString());
                           } else {
                             setState(() {
                               widget.albumData["IsSelected"] = "true";
                             });
                             widget.onChange(
-                                "Add", widget.albumData["Id"].toString());
+                                "Add", widget.albumData["Id"].toString(),widget.albumData["Photo"].toString());
                           }
                         },
                         child:
@@ -148,7 +148,7 @@ class _AllAlbumComponentState extends State<AllAlbumComponent> {
                                             color: Colors.white, width: 2)),
                                   ),
                       ),
-                      Platform.isIOS
+                      /*Platform.isIOS
                           ? Container(
                         height: 30,
                         width: 30,
@@ -193,7 +193,7 @@ class _AllAlbumComponentState extends State<AllAlbumComponent> {
                             size: 17,
                           ),
                         ),
-                      ),
+                      ),*/
                     ],
                   ),
                 ],

@@ -394,7 +394,7 @@ class Services {
     String StudioId = prefs.getString(Session.StudioId);
 
     String url = API_URL + 'GetCategoryList?studioId=$StudioId';
-    print("GetCategoryList URL: " + url);
+    print("GetportfolioGalleryList URL: " + url);
     try {
       Response response = await dio.get(url);
       if (response.statusCode == 200) {
@@ -413,7 +413,7 @@ class Services {
         throw Exception(MESSAGES.INTERNET_ERROR);
       }
     } catch (e) {
-      print("GetCategoryList Erorr : " + e.toString());
+      print("GetportfolioGalleryList Erorr : " + e.toString());
       throw Exception(MESSAGES.INTERNET_ERROR);
     }
   }
@@ -680,4 +680,30 @@ class Services {
       throw Exception(e);
     }
   }
+
+  static Future<SaveDataClass> UpdateGallrySelection(String galleryId,String status) async {
+    String url = API_URL + 'UpdateGallerySelectionStatus?galleryId=$galleryId&status=$status';
+    print("Studio App Share URL: " + url);
+    try {
+      Response response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        SaveDataClass saveData = new SaveDataClass(
+            Message: 'No Data', IsSuccess: false,Data: "");
+        print("Studio App Share Response: " + response.data.toString());
+        var responseData = response.data;
+        saveData.Message = responseData["Message"];
+        saveData.IsSuccess = responseData["IsSuccess"];
+        saveData.Data = responseData["Data"].toString();
+
+        return saveData;
+      } else {
+        throw Exception("Something Went Wrong");
+      }
+    } catch (e) {
+      print("Studio App Share Erorr : " + e.toString());
+      throw Exception(e);
+    }
+  }
+
 }

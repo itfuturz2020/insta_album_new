@@ -5,9 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
+import 'package:progress_dialog/progress_dialog.dart';
 
 class PortfolioImageView extends StatefulWidget {
   List albumData;
@@ -21,6 +25,29 @@ class PortfolioImageView extends StatefulWidget {
 
 class _PortfolioImageViewState extends State<PortfolioImageView> {
   bool downloading = false;
+
+  ProgressDialog pr;
+
+  void initState() {
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+    pr.style(
+        message: "Please Wait",
+        borderRadius: 10.0,
+        progressWidget: Container(
+          padding: EdgeInsets.all(15),
+          child: CircularProgressIndicator(
+            backgroundColor: cnst.appPrimaryMaterialColor,
+          ),
+        ),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+    //pr.setMessage('Please Wait');
+    // TODO: implement initState
+    super.initState();
+  }
+
 
   Future<void> _downloadFile(String url) async {
     var file = url.split('/');
@@ -57,6 +84,35 @@ class _PortfolioImageViewState extends State<PortfolioImageView> {
           'image/jpg');
     }
   }
+
+  _saveNetworkImage(String url) async {
+    pr.show();
+    //String path = '${url}';
+    Platform.isIOS
+        ? await GallerySaver.saveImage(url).then((bool success) {
+      print("Success = ${success}");
+      Fluttertoast.showToast(
+          msg: "Download Complete",
+          gravity: ToastGravity.TOP,
+          toastLength: Toast.LENGTH_SHORT);
+    })
+        : await downloadAndroid(url);
+    pr.hide();
+  }
+
+  downloadAndroid(String path) async {
+    var response = await Dio()
+        .get("${path}", options: Options(responseType: ResponseType.bytes));
+    final result =
+    await ImageGallerySaver.saveImage(Uint8List.fromList(response.data));
+    print(result);
+    Fluttertoast.showToast(
+        msg: "Download Complete",
+        gravity: ToastGravity.TOP,
+        toastLength: Toast.LENGTH_SHORT);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

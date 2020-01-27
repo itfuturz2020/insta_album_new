@@ -138,7 +138,7 @@ class _SelectedAlbumComponentState extends State<SelectedAlbumComponent> {
                                 Border.all(color: Colors.white, width: 2)),
                           ),
                         ),
-                        Platform.isIOS ?
+                        /*Platform.isIOS ?
                             Container():
                         GestureDetector(
                           onTap: () {
@@ -180,14 +180,11 @@ class _SelectedAlbumComponentState extends State<SelectedAlbumComponent> {
                               size: 17,
                             ),
                           ),
-                        ),
-
+                        ),*/
                       ],
                     )
-
                   ],
                 )
-
               ],
             ),
           ),

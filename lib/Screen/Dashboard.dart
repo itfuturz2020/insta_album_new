@@ -56,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
       saveDeviceToken();
     }
 
-    var initializationSettingsAndroid =
+    /*var initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
@@ -65,7 +65,7 @@ class _DashboardState extends State<Dashboard> {
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
 
-    _showDailyAtTime();
+    _showDailyAtTime();*/
   }
 
   Future<void> _showDailyAtTime() async {
@@ -113,7 +113,7 @@ class _DashboardState extends State<Dashboard> {
     "Home",
     "Profile",
     "Notification",
-    "About The Insta Album",
+    "About Photo Cloud",
   ];
 
   saveDeviceToken() async {
@@ -179,31 +179,30 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: true,
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Text(titleList[_currentIndex].toString()),
-          actions: <Widget>[
-            GestureDetector(
-              onTap: () {
-                _logout();
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Icon(
-                  Icons.exit_to_app,
-                  color: Colors.black,
-                  size: 30,
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text(titleList[_currentIndex].toString()),
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              _logout();
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.exit_to_app,
+                color: Colors.black,
+                size: 30,
               ),
-            )
-          ],
-        ),
-        body: _children[_currentIndex],
-        bottomNavigationBar: AnimatedBottomBar(
+            ),
+          )
+        ],
+      ),
+      body: _children[_currentIndex],
+      bottomNavigationBar: SafeArea(
+        child: AnimatedBottomBar(
           barItems: barItems,
           animationDuration: Duration(milliseconds: 350),
           onBarTab: (index) {

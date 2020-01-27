@@ -63,7 +63,7 @@ class _PendingComponentState extends State<PendingComponent> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.onChange("Show", widget.index);
+        widget.onChange("Show", widget.index,widget.albumData["Photo"].toString());
       },
       child: Container(
         padding: EdgeInsets.all(0),
@@ -109,13 +109,13 @@ class _PendingComponentState extends State<PendingComponent> {
                                 widget.albumData["IsSelected"] = "false";
                               });
                               widget.onChange(
-                                  "Remove", widget.albumData["Id"].toString());
+                                  "Remove", widget.albumData["Id"].toString(),widget.albumData["Photo"].toString());
                             } else {
                               setState(() {
                                 widget.albumData["IsSelected"] = "true";
                               });
                               widget.onChange(
-                                  "Add", widget.albumData["Id"].toString());
+                                  "Add", widget.albumData["Id"].toString(),widget.albumData["Photo"].toString());
                             }
                           },
                           child: Align(
@@ -146,7 +146,7 @@ class _PendingComponentState extends State<PendingComponent> {
                                   ),
                           ),
                         ),
-                        Platform.isIOS
+                        /*Platform.isIOS
                             ? Container()
                             : GestureDetector(
                                 onTap: () {
@@ -188,7 +188,7 @@ class _PendingComponentState extends State<PendingComponent> {
                               size: 17,
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     )
                   ],

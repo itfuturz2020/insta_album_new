@@ -21,7 +21,7 @@ class _GalleryComponentState extends State<GalleryComponent> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    Home(widget.GalleryData["Id"].toString())));
+                    Home(widget.GalleryData["Id"].toString(),widget.GalleryData["Title"].toString(),widget.GalleryData["IsSelectionDone"].toString())));
       },
       child: Card(
         color: Colors.green,

@@ -71,6 +71,7 @@ class _LoginState extends State<Login> {
                     Session.IsVerified, data[0]["IsVerified"].toString());
 
                 await prefs.setString(Session.Type, data[0]["Type"].toString());
+                await prefs.setString(Session.PinSelection, "false");
 
                 if (data[0]["IsVerified"].toString() == "true") {
                   if (data[0]["Type"].toString() == "Guest") {

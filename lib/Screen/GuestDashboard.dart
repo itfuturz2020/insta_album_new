@@ -80,7 +80,7 @@ class _GuestDashboardState extends State<GuestDashboard> {
     "Portfolio",
     "Profile",
     "Notification",
-    "About The Insta Album",
+    "About Photo Cloud",
   ];
 
   List<BarItem> barItems = [
@@ -103,92 +103,91 @@ class _GuestDashboardState extends State<GuestDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: true,
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Text(titleList[_currentIndex].toString()),
-          actions: <Widget>[
-            GestureDetector(
-              onTap: () {
-                _logout();
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Icon(
-                  Icons.exit_to_app,
-                  color: Colors.black,
-                  size: 30,
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text(titleList[_currentIndex].toString()),
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              _logout();
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.exit_to_app,
+                color: Colors.black,
+                size: 30,
               ),
-            )
-          ],
+            ),
+          )
+        ],
+      ),
+      floatingActionButton: SpeedDial(
+        // both default to 16
+        marginRight: 8,
+        marginBottom: 8,
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: IconThemeData(
+          size: 22.0,
         ),
-        floatingActionButton: SpeedDial(
-          // both default to 16
-          marginRight: 8,
-          marginBottom: 8,
-          animatedIcon: AnimatedIcons.menu_close,
-          animatedIconTheme: IconThemeData(
-            size: 22.0,
-          ),
-          // this is ignored if animatedIcon is non null
-          // child: Icon(Icons.add),
-          visible: dialVisible,
-          // If true user is forced to close dial manually
-          // by tapping main button and overlay is not rendered.
-          closeManually: false,
-          curve: Curves.bounceIn,
-          overlayColor: Colors.black,
-          overlayOpacity: 0.5,
-          onOpen: () => print('OPENING DIAL'),
-          onClose: () => print('DIAL CLOSED'),
-          //tooltip: 'Speed Dial',
-          //heroTag: 'speed-dial-hero-tag',
-          backgroundColor: cnst.appPrimaryMaterialColor,
-          foregroundColor: Colors.black,
-          //child: Icon(Icons.add),
-          elevation: 4.0,
-          shape: CircleBorder(),
-          children: [
-            SpeedDialChild(
-                child: Icon(Icons.access_time),
-                backgroundColor: Colors.deepPurple,
-                label: 'Book Appointment',
-                labelStyle: TextStyle(fontSize: 17.0),
-                onTap: () {
-                  Navigator.pushNamed(context, '/BookAppointment');
-                }),
-            /*SpeedDialChild(
-                child: Icon(Icons.accessibility),
-                backgroundColor: Colors.red,
-                label: 'Add Customer',
-                labelStyle: TextStyle(fontSize: 17.0),
-                onTap: () {
-                  Navigator.pushReplacementNamed(context, '/AddCustomer');
-                }),
-            SpeedDialChild(
-                child: Icon(Icons.brush),
-                backgroundColor: Colors.blue,
-                label: 'View Portfolio',
-                labelStyle: TextStyle(fontSize: 17.0),
-                onTap: () {
-                  Navigator.pushNamed(context, '/PortfolioScreen');
-                }),*/
-            SpeedDialChild(
-              child: Icon(Icons.link),
-              backgroundColor: Colors.green,
-              label: 'Social Link',
+        // this is ignored if animatedIcon is non null
+        // child: Icon(Icons.add),
+        visible: dialVisible,
+        // If true user is forced to close dial manually
+        // by tapping main button and overlay is not rendered.
+        closeManually: false,
+        curve: Curves.bounceIn,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        onOpen: () => print('OPENING DIAL'),
+        onClose: () => print('DIAL CLOSED'),
+        //tooltip: 'Speed Dial',
+        //heroTag: 'speed-dial-hero-tag',
+        backgroundColor: cnst.appPrimaryMaterialColor,
+        foregroundColor: Colors.black,
+        //child: Icon(Icons.add),
+        elevation: 4.0,
+        shape: CircleBorder(),
+        children: [
+          SpeedDialChild(
+              child: Icon(Icons.access_time),
+              backgroundColor: Colors.deepPurple,
+              label: 'Book Appointment',
               labelStyle: TextStyle(fontSize: 17.0),
               onTap: () {
-                Navigator.pushNamed(context, '/SocialLink');
-              },
-            ),
-          ],
-        ),
-        bottomNavigationBar: AnimatedBottomBar(
+                Navigator.pushNamed(context, '/BookAppointment');
+              }),
+          /*SpeedDialChild(
+              child: Icon(Icons.accessibility),
+              backgroundColor: Colors.red,
+              label: 'Add Customer',
+              labelStyle: TextStyle(fontSize: 17.0),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/AddCustomer');
+              }),
+          SpeedDialChild(
+              child: Icon(Icons.brush),
+              backgroundColor: Colors.blue,
+              label: 'View Portfolio',
+              labelStyle: TextStyle(fontSize: 17.0),
+              onTap: () {
+                Navigator.pushNamed(context, '/PortfolioScreen');
+              }),*/
+          SpeedDialChild(
+            child: Icon(Icons.link),
+            backgroundColor: Colors.green,
+            label: 'Social Link',
+            labelStyle: TextStyle(fontSize: 17.0),
+            onTap: () {
+              Navigator.pushNamed(context, '/SocialLink');
+            },
+          ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: AnimatedBottomBar(
           barItems: barItems,
           animationDuration: Duration(milliseconds: 350),
           onBarTab: (index) {
@@ -199,8 +198,8 @@ class _GuestDashboardState extends State<GuestDashboard> {
             );
           },
         ),
-        body: _children[_currentIndex],
       ),
+      body: _children[_currentIndex],
     );
   }
 }

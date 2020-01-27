@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Common/Services.dart';
@@ -27,10 +31,18 @@ class AlbumAllImages extends StatefulWidget {
 class _AlbumAllImagesState extends State<AlbumAllImages> {
   List albumData = new List();
   List selectedData = new List();
+  List selectedPhone = new List();
 
   bool isSaveButton = false;
   ProgressDialog pr;
   String selectedCount = "0";
+
+  final List<String> moreMenus = <String>["Download", "Share", "Save Selected"];
+  String selectedMoreMenu = "";
+
+  ProgressDialog pr1;
+
+
 
   void initState() {
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -117,8 +129,10 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
     }
   }
 
-  setNewArrayList(String Id, String isSelected) {
+  setNewArrayList(String Id, String isSelected, String ImageUrl) {
     bool ischeck = false;
+    bool ischeckimage = false;
+
     if (selectedData.length > 0) {
       for (int i = 0; i < selectedData.length; i++) {
         if (selectedData[i]["Id"].toString() == Id) {
@@ -150,6 +164,39 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
       selectedData.add(data);
     }
     print(selectedData.toString());
+
+    if (selectedPhone.length > 0) {
+      for (int i = 0; i < selectedPhone.length; i++) {
+        if (selectedData[i]["Id"].toString() == Id) {
+          setState(() {
+            ischeckimage = true;
+            selectedPhone.removeAt(i);
+          });
+        }
+      }
+      if (ischeckimage == false) {
+        if(isSelected=="true"){
+          var data1 = {
+            'Id': Id,
+            'ImageUrl': ImageUrl,
+          };
+          selectedPhone.add(data1);
+        }
+      }
+    } else {
+      if(isSelected=="true"){
+        var data1 = {
+          'Id': Id,
+          'ImageUrl': ImageUrl,
+        };
+        selectedPhone.add(data1);
+      }
+    }
+    //pr1.hide();
+    setState(() {
+
+    });
+    print("Select Image = ${selectedPhone.toString()}");
   }
 
   signUpDone(String msg) {
@@ -208,7 +255,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
     }
   }
 
-  Widget getImage(BuildContext context, int index) {
+  /*Widget getImage(BuildContext context, int index) {
     return AllAlbumComponent(albumData[index], index, (action, Id) {
       if (action.toString() == "Show") {
         Navigator.push(
@@ -232,6 +279,133 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
         setNewArrayList(Id, "true");
       }
     });
+  }*/
+
+  downloadAll() async {
+    pr1.show();
+    for (int i = 0; i < selectedPhone.length; i++) {
+
+      String filename="";
+
+      String path =
+          "${cnst.ImgUrl}${selectedPhone[i]["ImageUrl"].toString().replaceAll(" ", "%20")}";
+      try {
+        Platform.isIOS
+            ? await GallerySaver.saveImage(path).then((bool success) {
+          print("Success = ${success}");
+          Fluttertoast.showToast(
+              msg: "Download Complete",
+              gravity: ToastGravity.TOP,
+              toastLength: Toast.LENGTH_SHORT);
+        })
+            : await downloadAndroid(path);
+      } catch (e) {
+        print(e);
+      }
+    }
+    pr1.hide();
+  }
+
+  downloadAndroid(String path) async {
+    var response = await Dio()
+        .get("${path}", options: Options(responseType: ResponseType.bytes));
+    final result =
+    await ImageGallerySaver.saveImage(Uint8List.fromList(response.data));
+    print(result);
+    Fluttertoast.showToast(
+        msg: "Download Complete",
+        gravity: ToastGravity.TOP,
+        toastLength: Toast.LENGTH_SHORT);
+  }
+
+  shareFile() async {
+    pr1.show();
+    String filename = "";
+
+    //var imagedata = {};
+    Map<String, List<int>> imagedata = {};
+
+    for (int i = 0; i < selectedPhone.length; i++) {
+      filename = selectedPhone[i]["ImageUrl"].split('/').last;
+      var request = await HttpClient().getUrl(Uri.parse(cnst.ImgUrl +
+          selectedPhone[i]["ImageUrl"].toString().replaceAll(" ", "%20")));
+      var response = await request.close();
+      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+
+      imagedata["${filename}"] = bytes;
+    }
+    pr1.hide();
+    await Share.files('esys images', imagedata, '*/*', text: '');
+  }
+
+  _onMoreMenuSelection(index) {
+    switch (index) {
+      case 'Download':
+        if (selectedPhone.length > 0) {
+          pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+          pr1.style(
+              message: "Please Wait",
+              borderRadius: 10.0,
+              progressWidget: Container(
+                padding: EdgeInsets.all(15),
+                child: CircularProgressIndicator(
+                  backgroundColor: cnst.appPrimaryMaterialColor,
+                ),
+              ),
+              elevation: 10.0,
+              insetAnimCurve: Curves.easeInOut,
+              messageTextStyle: TextStyle(
+                  color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+          downloadAll();
+        } else {
+          Fluttertoast.showToast(
+              msg: "No Image Selected.",
+              gravity: ToastGravity.TOP,
+              toastLength: Toast.LENGTH_SHORT);
+        }
+        break;
+      case 'Share':
+        if (selectedPhone.length > 0) {
+          pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+          pr1.style(
+              message: "Please Wait",
+              borderRadius: 10.0,
+              progressWidget: Container(
+                padding: EdgeInsets.all(15),
+                child: CircularProgressIndicator(
+                  backgroundColor: cnst.appPrimaryMaterialColor,
+                ),
+              ),
+              elevation: 10.0,
+              insetAnimCurve: Curves.easeInOut,
+              messageTextStyle: TextStyle(
+                  color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+          shareFile();
+        } else {
+          Fluttertoast.showToast(
+              msg: "No Image Selected.",
+              gravity: ToastGravity.TOP,
+              toastLength: Toast.LENGTH_SHORT);
+        }
+        break;
+      case 'Save Selected':
+        pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+        pr1.style(
+            message: "Please Wait",
+            borderRadius: 10.0,
+            progressWidget: Container(
+              padding: EdgeInsets.all(15),
+              child: CircularProgressIndicator(
+                backgroundColor: cnst.appPrimaryMaterialColor,
+              ),
+            ),
+            elevation: 10.0,
+            insetAnimCurve: Curves.easeInOut,
+            messageTextStyle: TextStyle(
+                color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+        sendSelectImage();
+        break;
+    }
   }
 
   @override
@@ -257,40 +431,23 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
         ),
         actions: <Widget>[
           selectedData.length > 0
-              ? Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: GestureDetector(
-                    onTap: () {
-                      sendSelectImage();
-                    },
-                    child: Container(
-                        width: 80,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.all(Radius.circular(5))),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 3, right: 3, top: 2, bottom: 2),
-                          child: Center(
-                            child: Text(
-                              "Save",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        )),
-                  ))
-              : Container(),
-          /*GestureDetector(
-            onTap: (){
-              shareFile();
+              ? PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (_) => <PopupMenuItem<String>>[
+              new PopupMenuItem<String>(
+                  child: const Text('Download'), value: 'Download'),
+              new PopupMenuItem<String>(
+                  child: const Text('Share'), value: 'Share'),
+              new PopupMenuItem<String>(
+                  child: const Text('Save Selected'),
+                  value: 'Save Selected'),
+            ],
+            onSelected: (index) {
+              //print("Selected Menu:  ${index}");
+              _onMoreMenuSelection(index);
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.share,size: 25,),
-            ),
-          )*/
+          )
+              : Container(),
         ],
         actionsIconTheme: IconThemeData.fallback(),
         title: Text(
@@ -315,17 +472,110 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
             child: Column(
               children: <Widget>[
                 Card(
-                  margin: EdgeInsets.all(0),
-                  child: Container(
-                    padding: EdgeInsets.all(15),
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      "${"Selected Images : "}${selectedCount} / ${widget.totalImg}",
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
-                    ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(15),
+                          width: MediaQuery.of(context).size.width,
+                          child: Text(
+                            "${"Selected Images : "}${selectedCount} / ${widget.totalImg}",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                      selectedPhone.length > 0
+                          ? Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              if (selectedPhone.length > 0) {
+                                pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+                                pr1.style(
+                                    message: "Please Wait",
+                                    borderRadius: 10.0,
+                                    progressWidget: Container(
+                                      padding: EdgeInsets.all(15),
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: cnst.appPrimaryMaterialColor,
+                                      ),
+                                    ),
+                                    elevation: 10.0,
+                                    insetAnimCurve: Curves.easeInOut,
+                                    messageTextStyle: TextStyle(
+                                        color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+                                downloadAll();
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "No Image Selected.",
+                                    gravity: ToastGravity.TOP,
+                                    toastLength: Toast.LENGTH_SHORT);
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(5),
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: cnst.appPrimaryMaterialColor,
+                                  border: Border.all(
+                                      color: cnst.appPrimaryMaterialColor,
+                                      width: 2)),
+                              child: Icon(
+                                Icons.file_download,
+                                size: 17,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (selectedPhone.length > 0) {
+                                pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+                                pr1.style(
+                                    message: "Please Wait",
+                                    borderRadius: 10.0,
+                                    progressWidget: Container(
+                                      padding: EdgeInsets.all(15),
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: cnst.appPrimaryMaterialColor,
+                                      ),
+                                    ),
+                                    elevation: 10.0,
+                                    insetAnimCurve: Curves.easeInOut,
+                                    messageTextStyle: TextStyle(
+                                        color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+                                shareFile();
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "No Image Selected.",
+                                    gravity: ToastGravity.TOP,
+                                    toastLength: Toast.LENGTH_SHORT);
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(5),
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: cnst.appPrimaryMaterialColor,
+                                  border: Border.all(
+                                      color: cnst.appPrimaryMaterialColor,
+                                      width: 2)),
+                              child: Icon(
+                                Icons.share,
+                                size: 17,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                          : Container()
+                    ],
                   ),
                 ),
                 Expanded(
@@ -377,7 +627,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                           addRepaintBoundaries: false,
                           itemBuilder: (BuildContext context, int index) {
                             return AllAlbumComponent(albumData[index], index,
-                                (action, Id) {
+                                (action, Id, ImageUrl) {
                               if (action.toString() == "Show") {
                                 Navigator.push(
                                     context,
@@ -386,19 +636,33 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                                             albumData: albumData,
                                             albumIndex: index)));
                               } else if (action.toString() == "Remove") {
+                                pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+                                pr1.style(
+                                    message: "Please Wait",
+                                    borderRadius: 10.0,
+                                    progressWidget: Container(
+                                      padding: EdgeInsets.all(15),
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: cnst.appPrimaryMaterialColor,
+                                      ),
+                                    ),
+                                    elevation: 10.0,
+                                    insetAnimCurve: Curves.easeInOut,
+                                    messageTextStyle: TextStyle(
+                                        color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
                                 int count = int.parse(selectedCount);
                                 count = count - 1;
                                 setState(() {
                                   selectedCount = count.toString();
                                 });
-                                setNewArrayList(Id, "false");
+                                setNewArrayList(Id, "false", ImageUrl);
                               } else {
                                 int count = int.parse(selectedCount);
                                 count = count + 1;
                                 setState(() {
                                   selectedCount = count.toString();
                                 });
-                                setNewArrayList(Id, "true");
+                                setNewArrayList(Id, "true", ImageUrl);
                               }
                             });
                           },

@@ -11,10 +11,11 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Insta Album"
+        android:label="Photo Cloud"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
