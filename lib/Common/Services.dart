@@ -705,5 +705,28 @@ class Services {
       throw Exception(e);
     }
   }
+  static Future<List> GetSoundData() async {
+    String url = API_URL + 'GetBackgroundMusic';
+    print("GetBackgroundMusic URL: " + url);
+    try {
+      Response response = await dio.get(url);
 
+      if (response.statusCode == 200) {
+        List list = [];
+        print("GetBackgroundMusic Response: " + response.data.toString());
+        var data = response.data;
+        if (data["IsSuccess"] == true && data["Data"].length > 0) {
+          list = data["Data"];
+        } else {
+          list = [];
+        }
+        return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("GetBackgroundMusic Erorr : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
 }

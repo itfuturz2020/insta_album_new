@@ -7,6 +7,7 @@ import 'package:insta_album_new/Screen/Login.dart';
 import 'package:insta_album_new/Screen/MyInvites.dart';
 import 'package:insta_album_new/Screen/OTPVerification.dart';
 import 'package:insta_album_new/Screen/PortfolioScreen.dart';
+import 'package:insta_album_new/Screen/SelectSound.dart';
 import 'package:insta_album_new/Screen/SignUpGuest.dart';
 import 'package:insta_album_new/Screen/Splash.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
@@ -79,6 +80,7 @@ class _MyAppState extends State<MyApp> {
         '/SignUpGuest': (context) => SignUpGuest(),
         '/GuestDashboard': (context) => GuestDashboard(),
         '/MyCustomer': (context) => MychildCustomerList(),
+        '/SelectSound': (context) => SelectSound(),
       },
       theme: ThemeData(
         fontFamily: 'Montserrat',

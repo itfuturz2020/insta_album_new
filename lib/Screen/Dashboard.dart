@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:insta_album_new/Pages/Settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:insta_album_new/Common/Services.dart';
 import 'package:insta_album_new/Pages/AboutUs.dart';
@@ -97,6 +98,7 @@ class _DashboardState extends State<Dashboard> {
     Profile(),
     NotificationPage(),
     AboutUs(),
+    Settings(),
   ];
   List<BarItem> barItems = [
     BarItem(text: "Home", iconData: Icons.home, color: Colors.teal),
@@ -107,6 +109,7 @@ class _DashboardState extends State<Dashboard> {
         iconData: Icons.notifications_active,
         color: Colors.deepOrange.shade600),
     BarItem(text: "About Us", iconData: Icons.info, color: Colors.lightGreen),
+    BarItem(text: "Settings", iconData: Icons.settings, color: Colors.blue),
   ];
 
   List<String> titleList = [
@@ -114,6 +117,7 @@ class _DashboardState extends State<Dashboard> {
     "Profile",
     "Notification",
     "About Photo Cloud",
+    "Settings",
   ];
 
   saveDeviceToken() async {
