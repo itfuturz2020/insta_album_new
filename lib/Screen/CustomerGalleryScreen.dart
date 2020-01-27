@@ -17,6 +17,7 @@ class _CustomerGalleryState extends State<CustomerGallery> {
   DateTime currentBackPressTime;
   bool dialVisible = true;
 
+
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
