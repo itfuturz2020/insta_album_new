@@ -10,6 +10,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:insta_album_new/Screen/SelectedPhotoShow.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Common/Services.dart';
@@ -41,8 +42,6 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
   String selectedMoreMenu = "";
 
   ProgressDialog pr1;
-
-
 
   void initState() {
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -175,7 +174,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
         }
       }
       if (ischeckimage == false) {
-        if(isSelected=="true"){
+        if (isSelected == "true") {
           var data1 = {
             'Id': Id,
             'ImageUrl': ImageUrl,
@@ -184,7 +183,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
         }
       }
     } else {
-      if(isSelected=="true"){
+      if (isSelected == "true") {
         var data1 = {
           'Id': Id,
           'ImageUrl': ImageUrl,
@@ -193,9 +192,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
       }
     }
     //pr1.hide();
-    setState(() {
-
-    });
+    setState(() {});
     print("Select Image = ${selectedPhone.toString()}");
   }
 
@@ -284,20 +281,19 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
   downloadAll() async {
     pr1.show();
     for (int i = 0; i < selectedPhone.length; i++) {
-
-      String filename="";
+      String filename = "";
 
       String path =
           "${cnst.ImgUrl}${selectedPhone[i]["ImageUrl"].toString().replaceAll(" ", "%20")}";
       try {
         Platform.isIOS
             ? await GallerySaver.saveImage(path).then((bool success) {
-          print("Success = ${success}");
-          Fluttertoast.showToast(
-              msg: "Download Complete",
-              gravity: ToastGravity.TOP,
-              toastLength: Toast.LENGTH_SHORT);
-        })
+                print("Success = ${success}");
+                Fluttertoast.showToast(
+                    msg: "Download Complete",
+                    gravity: ToastGravity.TOP,
+                    toastLength: Toast.LENGTH_SHORT);
+              })
             : await downloadAndroid(path);
       } catch (e) {
         print(e);
@@ -310,7 +306,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
     var response = await Dio()
         .get("${path}", options: Options(responseType: ResponseType.bytes));
     final result =
-    await ImageGallerySaver.saveImage(Uint8List.fromList(response.data));
+        await ImageGallerySaver.saveImage(Uint8List.fromList(response.data));
     print(result);
     Fluttertoast.showToast(
         msg: "Download Complete",
@@ -355,7 +351,9 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
               elevation: 10.0,
               insetAnimCurve: Curves.easeInOut,
               messageTextStyle: TextStyle(
-                  color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+                  color: Colors.black,
+                  fontSize: 17.0,
+                  fontWeight: FontWeight.w600));
           downloadAll();
         } else {
           Fluttertoast.showToast(
@@ -379,7 +377,9 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
               elevation: 10.0,
               insetAnimCurve: Curves.easeInOut,
               messageTextStyle: TextStyle(
-                  color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+                  color: Colors.black,
+                  fontSize: 17.0,
+                  fontWeight: FontWeight.w600));
           shareFile();
         } else {
           Fluttertoast.showToast(
@@ -402,7 +402,9 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
             elevation: 10.0,
             insetAnimCurve: Curves.easeInOut,
             messageTextStyle: TextStyle(
-                color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+                color: Colors.black,
+                fontSize: 17.0,
+                fontWeight: FontWeight.w600));
         sendSelectImage();
         break;
     }
@@ -430,23 +432,33 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
           ),
         ),
         actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                //selectedPhone
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SelectedPhotoShow(allPhotos: albumData)));
+              },
+              icon: Icon(Icons.play_arrow)),
           selectedData.length > 0
               ? PopupMenuButton(
-            icon: Icon(Icons.more_vert),
-            itemBuilder: (_) => <PopupMenuItem<String>>[
-              new PopupMenuItem<String>(
-                  child: const Text('Download'), value: 'Download'),
-              new PopupMenuItem<String>(
-                  child: const Text('Share'), value: 'Share'),
-              new PopupMenuItem<String>(
-                  child: const Text('Save Selected'),
-                  value: 'Save Selected'),
-            ],
-            onSelected: (index) {
-              //print("Selected Menu:  ${index}");
-              _onMoreMenuSelection(index);
-            },
-          )
+                  icon: Icon(Icons.more_vert),
+                  itemBuilder: (_) => <PopupMenuItem<String>>[
+                    new PopupMenuItem<String>(
+                        child: const Text('Download'), value: 'Download'),
+                    new PopupMenuItem<String>(
+                        child: const Text('Share'), value: 'Share'),
+                    new PopupMenuItem<String>(
+                        child: const Text('Save Selected'),
+                        value: 'Save Selected'),
+                  ],
+                  onSelected: (index) {
+                    //print("Selected Menu:  ${index}");
+                    _onMoreMenuSelection(index);
+                  },
+                )
               : Container(),
         ],
         actionsIconTheme: IconThemeData.fallback(),
@@ -489,91 +501,99 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                       ),
                       selectedPhone.length > 0
                           ? Row(
-                        children: <Widget>[
-                          GestureDetector(
-                            onTap: () {
-                              if (selectedPhone.length > 0) {
-                                pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
-                                pr1.style(
-                                    message: "Please Wait",
-                                    borderRadius: 10.0,
-                                    progressWidget: Container(
-                                      padding: EdgeInsets.all(15),
-                                      child: CircularProgressIndicator(
-                                        backgroundColor: cnst.appPrimaryMaterialColor,
-                                      ),
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    if (selectedPhone.length > 0) {
+                                      pr1 = new ProgressDialog(context,
+                                          type: ProgressDialogType.Normal);
+                                      pr1.style(
+                                          message: "Please Wait",
+                                          borderRadius: 10.0,
+                                          progressWidget: Container(
+                                            padding: EdgeInsets.all(15),
+                                            child: CircularProgressIndicator(
+                                              backgroundColor:
+                                                  cnst.appPrimaryMaterialColor,
+                                            ),
+                                          ),
+                                          elevation: 10.0,
+                                          insetAnimCurve: Curves.easeInOut,
+                                          messageTextStyle: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 17.0,
+                                              fontWeight: FontWeight.w600));
+                                      downloadAll();
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: "No Image Selected.",
+                                          gravity: ToastGravity.TOP,
+                                          toastLength: Toast.LENGTH_SHORT);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(5),
+                                    height: 30,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: cnst.appPrimaryMaterialColor,
+                                        border: Border.all(
+                                            color: cnst.appPrimaryMaterialColor,
+                                            width: 2)),
+                                    child: Icon(
+                                      Icons.file_download,
+                                      size: 17,
                                     ),
-                                    elevation: 10.0,
-                                    insetAnimCurve: Curves.easeInOut,
-                                    messageTextStyle: TextStyle(
-                                        color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-                                downloadAll();
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "No Image Selected.",
-                                    gravity: ToastGravity.TOP,
-                                    toastLength: Toast.LENGTH_SHORT);
-                              }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.all(5),
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: cnst.appPrimaryMaterialColor,
-                                  border: Border.all(
-                                      color: cnst.appPrimaryMaterialColor,
-                                      width: 2)),
-                              child: Icon(
-                                Icons.file_download,
-                                size: 17,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              if (selectedPhone.length > 0) {
-                                pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
-                                pr1.style(
-                                    message: "Please Wait",
-                                    borderRadius: 10.0,
-                                    progressWidget: Container(
-                                      padding: EdgeInsets.all(15),
-                                      child: CircularProgressIndicator(
-                                        backgroundColor: cnst.appPrimaryMaterialColor,
-                                      ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    if (selectedPhone.length > 0) {
+                                      pr1 = new ProgressDialog(context,
+                                          type: ProgressDialogType.Normal);
+                                      pr1.style(
+                                          message: "Please Wait",
+                                          borderRadius: 10.0,
+                                          progressWidget: Container(
+                                            padding: EdgeInsets.all(15),
+                                            child: CircularProgressIndicator(
+                                              backgroundColor:
+                                                  cnst.appPrimaryMaterialColor,
+                                            ),
+                                          ),
+                                          elevation: 10.0,
+                                          insetAnimCurve: Curves.easeInOut,
+                                          messageTextStyle: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 17.0,
+                                              fontWeight: FontWeight.w600));
+                                      shareFile();
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: "No Image Selected.",
+                                          gravity: ToastGravity.TOP,
+                                          toastLength: Toast.LENGTH_SHORT);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(5),
+                                    height: 30,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: cnst.appPrimaryMaterialColor,
+                                        border: Border.all(
+                                            color: cnst.appPrimaryMaterialColor,
+                                            width: 2)),
+                                    child: Icon(
+                                      Icons.share,
+                                      size: 17,
                                     ),
-                                    elevation: 10.0,
-                                    insetAnimCurve: Curves.easeInOut,
-                                    messageTextStyle: TextStyle(
-                                        color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-                                shareFile();
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "No Image Selected.",
-                                    gravity: ToastGravity.TOP,
-                                    toastLength: Toast.LENGTH_SHORT);
-                              }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.all(5),
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: cnst.appPrimaryMaterialColor,
-                                  border: Border.all(
-                                      color: cnst.appPrimaryMaterialColor,
-                                      width: 2)),
-                              child: Icon(
-                                Icons.share,
-                                size: 17,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
+                                  ),
+                                ),
+                              ],
+                            )
                           : Container()
                     ],
                   ),
@@ -636,20 +656,24 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                                             albumData: albumData,
                                             albumIndex: index)));
                               } else if (action.toString() == "Remove") {
-                                pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+                                pr1 = new ProgressDialog(context,
+                                    type: ProgressDialogType.Normal);
                                 pr1.style(
                                     message: "Please Wait",
                                     borderRadius: 10.0,
                                     progressWidget: Container(
                                       padding: EdgeInsets.all(15),
                                       child: CircularProgressIndicator(
-                                        backgroundColor: cnst.appPrimaryMaterialColor,
+                                        backgroundColor:
+                                            cnst.appPrimaryMaterialColor,
                                       ),
                                     ),
                                     elevation: 10.0,
                                     insetAnimCurve: Curves.easeInOut,
                                     messageTextStyle: TextStyle(
-                                        color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+                                        color: Colors.black,
+                                        fontSize: 17.0,
+                                        fontWeight: FontWeight.w600));
                                 int count = int.parse(selectedCount);
                                 count = count - 1;
                                 setState(() {
