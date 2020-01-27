@@ -7,8 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class GalleryComponent extends StatefulWidget {
   var GalleryData;
+  String SelectedPin;
 
-  GalleryComponent(this.GalleryData);
+  GalleryComponent(this.GalleryData,this.SelectedPin);
 
   @override
   _GalleryComponentState createState() => _GalleryComponentState();
@@ -18,7 +19,11 @@ class _GalleryComponentState extends State<GalleryComponent> {
 
   setData() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(widget.SelectedPin!=widget.GalleryData["SelectionPin"].toString()){
+      await prefs.setString(Session.PinSelection, "false");
+    }
     await prefs.setString(Session.SelectedPin, "${widget.GalleryData["SelectionPin"].toString()}");
+
 
     Navigator.push(
         context,

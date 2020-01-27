@@ -260,6 +260,8 @@ class _PendingListState extends State<PendingList> {
   }
 
   downloadAll() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(Session.PinSelection, "true");
     pr1.show();
     for (int i = 0; i < selectedPhone.length; i++) {
       String path =
@@ -318,7 +320,7 @@ class _PendingListState extends State<PendingList> {
               (PinSelection == "false" ||
                   PinSelection == "" ||
                   PinSelection.toString() == "null")) {
-            _openDialog();
+            _openDialog("Download");
           } else {
             pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
             pr1.style(
@@ -347,23 +349,30 @@ class _PendingListState extends State<PendingList> {
         break;
       case 'Share':
         if (selectedPhone.length > 0) {
-          pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
-          pr1.style(
-              message: "Please Wait",
-              borderRadius: 10.0,
-              progressWidget: Container(
-                padding: EdgeInsets.all(15),
-                child: CircularProgressIndicator(
-                  backgroundColor: cnst.appPrimaryMaterialColor,
+          if (SelectedPin != "" &&
+              (PinSelection == "false" ||
+                  PinSelection == "" ||
+                  PinSelection.toString() == "null")) {
+            _openDialog("Share");
+          } else {
+            pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+            pr1.style(
+                message: "Please Wait",
+                borderRadius: 10.0,
+                progressWidget: Container(
+                  padding: EdgeInsets.all(15),
+                  child: CircularProgressIndicator(
+                    backgroundColor: cnst.appPrimaryMaterialColor,
+                  ),
                 ),
-              ),
-              elevation: 10.0,
-              insetAnimCurve: Curves.easeInOut,
-              messageTextStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w600));
-          shareFile();
+                elevation: 10.0,
+                insetAnimCurve: Curves.easeInOut,
+                messageTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w600));
+            shareFile();
+          }
         } else {
           Fluttertoast.showToast(
               msg: "No Image Selected.",
@@ -393,7 +402,7 @@ class _PendingListState extends State<PendingList> {
     }
   }
 
-  _openDialog() {
+  _openDialog(String type) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -415,14 +424,14 @@ class _PendingListState extends State<PendingList> {
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       prefixIcon: Icon(
                         Icons.lock,
-                        color: cnst.appPrimaryMaterialColor,
+                        color: Colors.black,
                       ),
                       hintText: "Enter PIN"),
                   keyboardType: TextInputType.number,
-                  style: TextStyle(color: cnst.appPrimaryMaterialColor),
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
-              new Text("Are You Sure You Want To Open BNI Conclave ?"),
+              new Text("Are You Sure You Want To Download/Share Images ?"),
             ],
           ),
           actions: <Widget>[
@@ -430,8 +439,7 @@ class _PendingListState extends State<PendingList> {
             new FlatButton(
               child: new Text("No",
                   style: TextStyle(
-                      color: cnst.appPrimaryMaterialColor,
-                      fontWeight: FontWeight.w600)),
+                      color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -439,11 +447,13 @@ class _PendingListState extends State<PendingList> {
             new FlatButton(
               child: new Text("Yes",
                   style: TextStyle(
-                      color: cnst.appPrimaryMaterialColor,
-                      fontWeight: FontWeight.w600)),
+                      color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 if (edtPIN.text == SelectedPin) {
                   Navigator.pop(context);
+                  setState(() {
+                    PinSelection = "true";
+                  });
                   pr1 = new ProgressDialog(context,
                       type: ProgressDialogType.Normal);
                   pr1.style(
@@ -461,7 +471,12 @@ class _PendingListState extends State<PendingList> {
                           color: Colors.black,
                           fontSize: 17.0,
                           fontWeight: FontWeight.w600));
-                  downloadAll();
+
+                  if (type == "Share") {
+                    shareFile();
+                  } else {
+                    downloadAll();
+                  }
                 } else {
                   Fluttertoast.showToast(
                       msg: "Enter Valid PIN...",
@@ -471,9 +486,6 @@ class _PendingListState extends State<PendingList> {
                       toastLength: Toast.LENGTH_SHORT);
                 }
                 print("PIN: ${edtPIN.text}");
-                //Navigator.of(context).pop();
-                //Navigator.pushReplacementNamed(context, "/Login");
-                // Navigator.pushReplacementNamed(context, "/ConclaveLogin");
               },
             ),
           ],
@@ -573,7 +585,7 @@ class _PendingListState extends State<PendingList> {
                                               PinSelection == "" ||
                                               PinSelection.toString() ==
                                                   "null")) {
-                                        _openDialog();
+                                        _openDialog("Download");
                                       } else {
                                         pr1 = new ProgressDialog(context,
                                             type: ProgressDialogType.Normal);
@@ -621,25 +633,33 @@ class _PendingListState extends State<PendingList> {
                                 GestureDetector(
                                   onTap: () {
                                     if (selectedPhone.length > 0) {
-                                      pr1 = new ProgressDialog(context,
-                                          type: ProgressDialogType.Normal);
-                                      pr1.style(
-                                          message: "Please Wait",
-                                          borderRadius: 10.0,
-                                          progressWidget: Container(
-                                            padding: EdgeInsets.all(15),
-                                            child: CircularProgressIndicator(
-                                              backgroundColor:
-                                                  cnst.appPrimaryMaterialColor,
+                                      if (SelectedPin != "" &&
+                                          (PinSelection == "false" ||
+                                              PinSelection == "" ||
+                                              PinSelection.toString() ==
+                                                  "null")) {
+                                        _openDialog("Share");
+                                      } else {
+                                        pr1 = new ProgressDialog(context,
+                                            type: ProgressDialogType.Normal);
+                                        pr1.style(
+                                            message: "Please Wait",
+                                            borderRadius: 10.0,
+                                            progressWidget: Container(
+                                              padding: EdgeInsets.all(15),
+                                              child: CircularProgressIndicator(
+                                                backgroundColor: cnst
+                                                    .appPrimaryMaterialColor,
+                                              ),
                                             ),
-                                          ),
-                                          elevation: 10.0,
-                                          insetAnimCurve: Curves.easeInOut,
-                                          messageTextStyle: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17.0,
-                                              fontWeight: FontWeight.w600));
-                                      shareFile();
+                                            elevation: 10.0,
+                                            insetAnimCurve: Curves.easeInOut,
+                                            messageTextStyle: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 17.0,
+                                                fontWeight: FontWeight.w600));
+                                        shareFile();
+                                      }
                                     } else {
                                       Fluttertoast.showToast(
                                           msg: "No Image Selected.",

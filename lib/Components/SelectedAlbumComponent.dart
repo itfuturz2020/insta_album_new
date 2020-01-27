@@ -12,6 +12,7 @@ class SelectedAlbumComponent extends StatefulWidget {
   var albumData;
   int index;
   Function onChange;
+  String SelectedPin;
 
   SelectedAlbumComponent(this.albumData, this.index, this.onChange);
 

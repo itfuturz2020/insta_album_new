@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:insta_album_new/Common/Constants.dart';
 import 'package:insta_album_new/Common/Services.dart';
 import 'package:insta_album_new/Components/AlbumComponent.dart';
 import 'package:insta_album_new/Components/CustomerGalleryComponent.dart';
 import 'package:insta_album_new/Components/LoadinComponent.dart';
 import 'package:insta_album_new/Components/NoDataComponent.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerGallery extends StatefulWidget {
   @override
@@ -17,6 +19,8 @@ class _CustomerGalleryState extends State<CustomerGallery> {
   DateTime currentBackPressTime;
   bool dialVisible = true;
 
+  String SelectedPin="";
+
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
@@ -26,6 +30,21 @@ class _CustomerGalleryState extends State<CustomerGallery> {
       return Future.value(false);
     }
     return Future.value(true);
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocalData();
+  }
+
+  getLocalData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    SelectedPin = preferences.getString(Session.SelectedPin);
+
+    setState(() {
+      SelectedPin = SelectedPin;
+    });
   }
 
   @override
@@ -111,7 +130,7 @@ class _CustomerGalleryState extends State<CustomerGallery> {
                           //shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           itemBuilder: (BuildContext context, int index) {
-                            return GalleryComponent(snapshot.data[index]);
+                            return GalleryComponent(snapshot.data[index],SelectedPin);
                           },
                         )
                       : NoDataComponent()

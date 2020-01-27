@@ -173,11 +173,7 @@ class _DashboardState extends State<Dashboard> {
 
   _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove(cnst.Session.CustomerId);
-    prefs.remove(cnst.Session.IsVerified);
-    prefs.remove(cnst.Session.StudioId);
-    prefs.remove(cnst.Session.Name);
-    prefs.remove(cnst.Session.Mobile);
+    await prefs.clear();
     Navigator.pushReplacementNamed(context, "/Login");
   }
 

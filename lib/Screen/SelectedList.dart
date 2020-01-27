@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:insta_album_new/Common/Constants.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Common/Services.dart';
 import 'package:insta_album_new/Components/NoDataComponent.dart';
 import 'package:insta_album_new/Components/SelectedAlbumComponent.dart';
 import 'package:insta_album_new/Screen/SelectedAlbum.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ImageView.dart';
 
@@ -27,6 +29,7 @@ class _SelectedListState extends State<SelectedList> {
   bool isSaveButton = false;
   ProgressDialog pr;
   String selectedCount = "0";
+  String SelectedPin = "", PinSelection = "";
 
   void initState() {
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -76,6 +79,12 @@ class _SelectedListState extends State<SelectedList> {
 
   getAlbumAllData() async {
     try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      setState(() {
+        SelectedPin = preferences.getString(Session.SelectedPin);
+        PinSelection = preferences.getString(Session.PinSelection);
+      });
+
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         pr.show();
