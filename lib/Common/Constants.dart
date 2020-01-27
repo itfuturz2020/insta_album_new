@@ -44,6 +44,7 @@ class Session{
   static const String StudioId = "StudioId";
   static const String Type = "Type";
   static const String PinSelection = "PinSelection";
+  static const String SelectedPin = "SelectedPin";
 
   static const String Photo = "Photo";
 

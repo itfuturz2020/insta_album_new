@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:insta_album_new/Common/Constants.dart';
 import 'package:insta_album_new/Pages/Home.dart';
 import 'package:insta_album_new/Screen/SelectedAlbum.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GalleryComponent extends StatefulWidget {
   var GalleryData;
@@ -13,15 +15,24 @@ class GalleryComponent extends StatefulWidget {
 }
 
 class _GalleryComponentState extends State<GalleryComponent> {
+
+  setData() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(Session.SelectedPin, "${widget.GalleryData["SelectionPin"].toString()}");
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                Home(widget.GalleryData["Id"].toString(),widget.GalleryData["Title"].toString(),widget.GalleryData["IsSelectionDone"].toString())));
+
+  }
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    Home(widget.GalleryData["Id"].toString(),widget.GalleryData["Title"].toString(),widget.GalleryData["IsSelectionDone"].toString())));
+        setData();
       },
       child: Card(
         color: Colors.green,
