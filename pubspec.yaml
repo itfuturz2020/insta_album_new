@@ -47,6 +47,7 @@ dependencies:
   image_gallery_saver: ^1.2.2
   gallery_saver: ^1.0.7
   carousel_pro: ^1.0.0
+  #audioplayers: ^0.14.0
 
 dev_dependencies:
   flutter_test:

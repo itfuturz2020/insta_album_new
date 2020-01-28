@@ -32,7 +32,6 @@ class _SettingsState extends State<Settings> {
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
     _getLocal();
-
   }
 
   _getLocal() async {
@@ -46,7 +45,44 @@ class _SettingsState extends State<Settings> {
     });
   }
 
-
+  _showSpeedDialog() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Speed"),
+          content: Column(
+            children: <Widget>[
+              Text("Speed"),
+            ],
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            FlatButton(
+              child: Text("Close",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("Ok",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   _changePlayMusic(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -56,16 +92,20 @@ class _SettingsState extends State<Settings> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          ListTile(
-            title: Text("Slide Show Speed"),
+          GestureDetector(
+            onTap: () {
+              _showSpeedDialog();
+            },
+            child: ListTile(
+              title: Text("Speed"),
+              subtitle: Text("SlideShow Speed(s)"),
+            ),
           ),
           Divider(
             thickness: 2,
@@ -85,7 +125,7 @@ class _SettingsState extends State<Settings> {
             thickness: 2,
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.pushNamed(context, '/SelectSound');
             },
             child: ListTile(
