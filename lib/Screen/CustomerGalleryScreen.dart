@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +11,7 @@ import 'package:insta_album_new/Components/CustomerGalleryComponent.dart';
 import 'package:insta_album_new/Components/LoadinComponent.dart';
 import 'package:insta_album_new/Components/NoDataComponent.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
+import 'package:insta_album_new/Screen/AdvertisemnetDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerGallery extends StatefulWidget {
@@ -18,8 +22,12 @@ class CustomerGallery extends StatefulWidget {
 class _CustomerGalleryState extends State<CustomerGallery> {
   DateTime currentBackPressTime;
   bool dialVisible = true;
+  int _current = 0;
 
-  String SelectedPin="";
+  String SelectedPin = "";
+  List _advertisementData = new List();
+  List _albumData = new List();
+  bool isLoading = true;
 
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
@@ -31,20 +39,134 @@ class _CustomerGalleryState extends State<CustomerGallery> {
     }
     return Future.value(true);
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getLocalData();
+    callMethod();
+  }
+
+  callMethod() async {
+    await getAdvertisementData();
+    await getAlbumData();
+  }
+
+  showMsg(String msg, {String title = 'PICTIK'}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(msg),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  getAdvertisementData() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        Future res = Services.GetAllAdvertisement();
+        setState(() {
+          isLoading = true;
+        });
+        res.then((data) async {
+          if (data != null && data.length > 0) {
+            setState(() {
+              _advertisementData = data;
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+              _advertisementData.clear();
+            });
+          }
+        }, onError: (e) {
+          showMsg("$e");
+          setState(() {
+            isLoading = false;
+          });
+        });
+      } else {
+        showMsg("No Internet Connection.");
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  getAlbumData() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        Future res = Services.GetCustomerGalleryList();
+        setState(() {
+          isLoading = true;
+        });
+        res.then((data) async {
+          if (data != null && data.length > 0) {
+            setState(() {
+              _albumData = data;
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+              _albumData.clear();
+            });
+          }
+        }, onError: (e) {
+          showMsg("$e");
+          setState(() {
+            isLoading = false;
+          });
+        });
+      } else {
+        showMsg("No Internet Connection.");
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   getLocalData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     SelectedPin = preferences.getString(Session.SelectedPin);
-
     setState(() {
       SelectedPin = SelectedPin;
     });
+  }
+
+  List<T> map<T>(List list, Function handler) {
+    List<T> result = [];
+    for (var i = 0; i < list.length; i++) {
+      result.add(handler(i, list[i]));
+    }
+    return result;
   }
 
   @override
@@ -119,23 +241,108 @@ class _CustomerGalleryState extends State<CustomerGallery> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: FutureBuilder<List>(
-            future: Services.GetCustomerGalleryList(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              return snapshot.connectionState == ConnectionState.done
-                  ? snapshot.data != null && snapshot.data.length > 0
-                      ? ListView.builder(
-                          padding: EdgeInsets.all(0),
-                          itemCount: snapshot.data.length,
-                          //shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (BuildContext context, int index) {
-                            return GalleryComponent(snapshot.data[index],SelectedPin);
-                          },
-                        )
-                      : NoDataComponent()
-                  : LoadinComponent();
-            },
+          child: isLoading?LoadinComponent() :Column(
+            children: <Widget>[
+              _advertisementData.length > 0
+                  ? Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: CarouselSlider(
+                            height: 170,
+                            viewportFraction: 0.9,
+                            autoPlayAnimationDuration:
+                                Duration(milliseconds: 1500),
+                            reverse: false,
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            autoPlay: true,
+                            onPageChanged: (index) {
+                              setState(() {
+                                _current = index;
+                              });
+                            },
+                            items: _advertisementData.map((i) {
+                              return Builder(builder: (BuildContext context) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AdvertisemnetDetail(
+                                          i,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: FadeInImage.assetNetwork(
+                                    placeholder: 'assets/loading.gif',
+                                    image: cnst.ImgUrl + i["Image"],
+                                    fit: BoxFit.fill,
+                                  ),
+                                );
+                              });
+                            }).toList(),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: map<Widget>(
+                            _advertisementData,
+                            (index, url) {
+                              return Container(
+                                width: 7.0,
+                                height: 7.0,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    color: _current == index
+                                        ? Colors.white
+                                        : Colors.grey),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              /*Expanded(
+                child: FutureBuilder<List>(
+                  future: Services.GetCustomerGalleryList(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    return snapshot.connectionState == ConnectionState.done
+                        ? snapshot.data != null && snapshot.data.length > 0
+                            ? ListView.builder(
+                                padding: EdgeInsets.all(0),
+                                itemCount: snapshot.data.length,
+                                //shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return GalleryComponent(
+                                      snapshot.data[index], SelectedPin);
+                                },
+                              )
+                            : NoDataComponent()
+                        : LoadinComponent();
+                  },
+                ),
+              ),*/
+              _albumData.length > 0
+                  ? Expanded(
+                    child: ListView.builder(
+                        padding: EdgeInsets.all(0),
+                        itemCount: _albumData.length,
+                        //shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GalleryComponent(_albumData[index], SelectedPin);
+                        },
+                      ),
+                  )
+                  : Expanded(child: NoDataComponent()),
+            ],
           ),
         ),
       ),

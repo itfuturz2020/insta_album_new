@@ -16,6 +16,7 @@ class _SelectedPhotoShowState extends State<SelectedPhotoShow> {
 
   @override
   void initState() {
+
     for (int i = 0; i < widget.allPhotos.length; i++) {
       imageList.add(cnst.ImgUrl + widget.allPhotos[i]["Photo"]);
     }
@@ -39,7 +40,7 @@ class _SelectedPhotoShowState extends State<SelectedPhotoShow> {
           ),
           body: Center(
             child: Container(
-              height: MediaQuery.of(context).size.height / 1.5,
+              //height: MediaQuery.of(context).size.height / 1.2,
               width: MediaQuery.of(context).size.width,
               child: Carousel(
                 defaultImage: "assets/loading.gif",

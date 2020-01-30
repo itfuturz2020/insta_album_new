@@ -116,7 +116,7 @@ class _DashboardState extends State<Dashboard> {
     "Home",
     "Profile",
     "Notification",
-    "About Photo Cloud",
+    "About PICTIK",
     "Settings",
   ];
 

@@ -80,7 +80,7 @@ class _GuestDashboardState extends State<GuestDashboard> {
     "Portfolio",
     "Profile",
     "Notification",
-    "About Photo Cloud",
+    "About PICTIK",
   ];
 
   List<BarItem> barItems = [

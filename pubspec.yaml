@@ -47,6 +47,12 @@ dependencies:
   image_gallery_saver: ^1.2.2
   gallery_saver: ^1.0.7
   carousel_pro: ^1.0.0
+  carousel_slider: ^1.3.1
+  google_maps_flutter: ^0.5.21+15
+  video_player: ^0.10.5+3
+  location: ^2.3.5
+  geolocator: ^4.0.3
+  neeko: ^0.0.6
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +94,8 @@ flutter:
     - images/man.png
     - images/whatsapp.png
     - assets/loading.gif
+    - images/icon_user.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

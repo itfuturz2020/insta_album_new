@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Photo Cloud"),
+          title: new Text("PICTIK"),
           content: new Text(msg),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog

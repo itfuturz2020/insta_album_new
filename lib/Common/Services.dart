@@ -729,4 +729,140 @@ class Services {
       throw Exception(MESSAGES.INTERNET_ERROR);
     }
   }
+
+  static Future<List> GetImageComment(String Imageid) async {
+    String url = API_URL + 'GetAlbumPhotoComment?albumPhotoId=$Imageid';
+    print("GetAlbumPhotoComment URL: " + url);
+    try {
+      Response response = await dio.get(url);
+      if (response.statusCode == 200) {
+        List list = [];
+        print("GetAlbumPhotoComment Response: " + response.data.toString());
+        var memberDataClass = response.data;
+        if (memberDataClass["IsSuccess"] == true &&
+            memberDataClass["Data"].length > 0) {
+          print(memberDataClass["Data"]);
+          list = memberDataClass["Data"];
+        } else {
+          list = [];
+        }
+        return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("GetAlbumPhotoComment Erorr : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
+
+  static Future<SaveDataClass> AddComment(body) async {
+    print(body.toString());
+    String url = API_URL + 'SaveAlbumPhotoComment';
+    print("SaveAlbumPhotoComment url : " + url);
+    try {
+      final response = await dio.post(url, data: body);
+      if (response.statusCode == 200) {
+        SaveDataClass saveData =
+        new SaveDataClass(Message: 'No Data', IsSuccess: false, Data: "0");
+        print("SaveAlbumPhotoComment Response: " + response.data.toString());
+        var memberDataClass = response.data;
+        saveData.Message = memberDataClass["Message"];
+        saveData.IsSuccess = memberDataClass["IsSuccess"];
+        saveData.Data = memberDataClass["Data"].toString();
+
+        return saveData;
+      } else {
+        print("Error SaveAlbumPhotoComment");
+        throw Exception(response.data.toString());
+      }
+    } catch (e) {
+      print("Error SaveAlbumPhotoComment ${e.toString()}");
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<SaveDataClass> DeleteComment(String id) async {
+    String url = API_URL + 'DeleteAlbumPhotoComment?id=$id';
+    print(" DeleteAlbumPhotoComment URL: " + url);
+    try {
+      Response response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        SaveDataClass saveData =
+        new SaveDataClass(Message: 'No Data', IsSuccess: false, Data: "0");
+        print("DeleteAlbumPhotoComment Response: " + response.data.toString());
+        var memberDataClass = response.data;
+        saveData.Message = memberDataClass["Message"];
+        saveData.IsSuccess = memberDataClass["IsSuccess"];
+        saveData.Data = memberDataClass["Data"].toString();
+
+        return saveData;
+      } else {
+        print("Error DeleteAlbumPhotoComment");
+        throw Exception(response.data.toString());
+      }
+    } catch (e) {
+      print("DeleteAlbumPhotoComment URL : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
+
+  static Future<List> GetAllAdvertisement() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String StudioId = preferences.getString(Session.StudioId);
+    String url = API_URL + 'GetStudioAdvertisement?studioId=$StudioId';
+    print("GetStudioAdvertisement URL: " + url);
+    try {
+      Response response = await dio.get(url);
+      if (response.statusCode == 200) {
+        List list = [];
+        print("GetStudioAdvertisement Response: " + response.data.toString());
+        var memberDataClass = response.data;
+        if (memberDataClass["IsSuccess"] == true &&
+            memberDataClass["Data"].length > 0) {
+          print(memberDataClass["Data"]);
+          list = memberDataClass["Data"];
+        } else {
+          list = [];
+        }
+        return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("GetStudioAdvertisement Erorr : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
+
+
+  static Future<List> GetAdvertisementDetail(String id) async {
+    String url = API_URL + 'GetAdvertisementDetail?advertisementId=$id';
+    print("GetStudioAdvertisement URL: " + url);
+    try {
+      Response response = await dio.get(url);
+      if (response.statusCode == 200) {
+        List list = [];
+        print("GetStudioAdvertisement Response: " + response.data.toString());
+        var memberDataClass = response.data;
+        if (memberDataClass["IsSuccess"] == true &&
+            memberDataClass["Data"].length > 0) {
+          print(memberDataClass["Data"]);
+          list = memberDataClass["Data"];
+        } else {
+          list = [];
+        }
+        return list;
+      } else {
+        throw Exception(MESSAGES.INTERNET_ERROR);
+      }
+    } catch (e) {
+      print("GetStudioAdvertisement Erorr : " + e.toString());
+      throw Exception(MESSAGES.INTERNET_ERROR);
+    }
+  }
+
+
+
 }

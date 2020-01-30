@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:insta_album_new/Common/Constants.dart';
+import 'package:insta_album_new/Screen/SelectedPhotoShow.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Common/Services.dart';
@@ -246,6 +247,16 @@ class _SelectedListState extends State<SelectedList> {
           ),
         ),
         actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                //selectedPhone
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SelectedPhotoShow(allPhotos: albumData)));
+              },
+              icon: Icon(Icons.play_circle_outline,size: 30,)),
           selectedData.length > 0
               ? Padding(
                   padding: const EdgeInsets.all(10),
@@ -372,7 +383,11 @@ class _SelectedListState extends State<SelectedList> {
                                     MaterialPageRoute(
                                         builder: (context) => ImageView(
                                             albumData: albumData,
-                                            albumIndex: index)));
+                                            albumIndex: index,
+                                            onChange: (action) {
+                                              if(action=="getData"){
+                                              }
+                                            })));
                               } else if (action.toString() == "Remove") {
                                 int count = int.parse(selectedCount);
                                 count = count - 1;

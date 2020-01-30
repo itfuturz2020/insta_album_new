@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:insta_album_new/Common/Constants.dart';
+import 'package:insta_album_new/Screen/SelectedPhotoShow.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Common/Services.dart';
@@ -295,7 +296,8 @@ class _PendingListState extends State<PendingList> {
     pr1.show();
     String filename = "";
     String filePath = "";
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(Session.PinSelection, "true");
     //var imagedata = {};
     Map<String, List<int>> imagedata = {};
 
@@ -408,7 +410,7 @@ class _PendingListState extends State<PendingList> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Photo Cloud"),
+          title: new Text("PICTIK"),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -494,6 +496,14 @@ class _PendingListState extends State<PendingList> {
     );
   }
 
+  getLocalData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      SelectedPin = preferences.getString(Session.SelectedPin);
+      PinSelection = preferences.getString(Session.PinSelection);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -516,6 +526,16 @@ class _PendingListState extends State<PendingList> {
           ),
         ),
         actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                //selectedPhone
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SelectedPhotoShow(allPhotos: albumData)));
+              },
+              icon: Icon(Icons.play_circle_outline,size: 30,)),
           selectedData.length > 0
               ? PopupMenuButton(
                   icon: Icon(Icons.more_vert),
@@ -750,7 +770,12 @@ class _PendingListState extends State<PendingList> {
                                     MaterialPageRoute(
                                         builder: (context) => ImageView(
                                             albumData: albumData,
-                                            albumIndex: index)));
+                                            albumIndex: index,
+                                            onChange: (action) {
+                                              if(action=="getData"){
+                                                getLocalData();
+                                              }
+                                            })));
                               } else if (action.toString() == "Remove") {
                                 int count = int.parse(selectedCount);
                                 count = count - 1;

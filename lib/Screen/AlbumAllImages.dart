@@ -10,6 +10,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:insta_album_new/Common/Constants.dart';
 import 'package:insta_album_new/Screen/SelectedPhotoShow.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
@@ -19,6 +20,7 @@ import 'package:insta_album_new/Components/LoadinComponent.dart';
 import 'package:insta_album_new/Components/NoDataComponent.dart';
 import 'package:insta_album_new/Screen/ImageView.dart';
 import 'package:insta_album_new/Screen/SelectedAlbum.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlbumAllImages extends StatefulWidget {
   String albumId, albumName, totalImg;
@@ -41,7 +43,10 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
   final List<String> moreMenus = <String>["Download", "Share", "Save Selected"];
   String selectedMoreMenu = "";
 
+  String SelectedPin = "", PinSelection = "";
+
   ProgressDialog pr1;
+  TextEditingController edtPIN = new TextEditingController();
 
   void initState() {
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -61,6 +66,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
     //pr.setMessage('Please Wait');
     // TODO: implement initState
     super.initState();
+
     getAlbumAllData();
   }
 
@@ -91,6 +97,11 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
 
   getAlbumAllData() async {
     try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      setState(() {
+        SelectedPin = preferences.getString(Session.SelectedPin);
+        PinSelection = preferences.getString(Session.PinSelection);
+      });
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         pr.show();
@@ -280,6 +291,8 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
 
   downloadAll() async {
     pr1.show();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(Session.PinSelection, "true");
     for (int i = 0; i < selectedPhone.length; i++) {
       String filename = "";
 
@@ -318,6 +331,8 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
     pr1.show();
     String filename = "";
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(Session.PinSelection, "true");
     //var imagedata = {};
     Map<String, List<int>> imagedata = {};
 
@@ -338,23 +353,30 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
     switch (index) {
       case 'Download':
         if (selectedPhone.length > 0) {
-          pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
-          pr1.style(
-              message: "Please Wait",
-              borderRadius: 10.0,
-              progressWidget: Container(
-                padding: EdgeInsets.all(15),
-                child: CircularProgressIndicator(
-                  backgroundColor: cnst.appPrimaryMaterialColor,
+          if (SelectedPin != "" &&
+              (PinSelection == "false" ||
+                  PinSelection == "" ||
+                  PinSelection.toString() == "null")) {
+            _openDialog("Download");
+          } else {
+            pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+            pr1.style(
+                message: "Please Wait",
+                borderRadius: 10.0,
+                progressWidget: Container(
+                  padding: EdgeInsets.all(15),
+                  child: CircularProgressIndicator(
+                    backgroundColor: cnst.appPrimaryMaterialColor,
+                  ),
                 ),
-              ),
-              elevation: 10.0,
-              insetAnimCurve: Curves.easeInOut,
-              messageTextStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w600));
-          downloadAll();
+                elevation: 10.0,
+                insetAnimCurve: Curves.easeInOut,
+                messageTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w600));
+            downloadAll();
+          }
         } else {
           Fluttertoast.showToast(
               msg: "No Image Selected.",
@@ -364,23 +386,30 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
         break;
       case 'Share':
         if (selectedPhone.length > 0) {
-          pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
-          pr1.style(
-              message: "Please Wait",
-              borderRadius: 10.0,
-              progressWidget: Container(
-                padding: EdgeInsets.all(15),
-                child: CircularProgressIndicator(
-                  backgroundColor: cnst.appPrimaryMaterialColor,
+          if (SelectedPin != "" &&
+              (PinSelection == "false" ||
+                  PinSelection == "" ||
+                  PinSelection.toString() == "null")) {
+            _openDialog("Share");
+          } else {
+            pr1 = new ProgressDialog(context, type: ProgressDialogType.Normal);
+            pr1.style(
+                message: "Please Wait",
+                borderRadius: 10.0,
+                progressWidget: Container(
+                  padding: EdgeInsets.all(15),
+                  child: CircularProgressIndicator(
+                    backgroundColor: cnst.appPrimaryMaterialColor,
+                  ),
                 ),
-              ),
-              elevation: 10.0,
-              insetAnimCurve: Curves.easeInOut,
-              messageTextStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w600));
-          shareFile();
+                elevation: 10.0,
+                insetAnimCurve: Curves.easeInOut,
+                messageTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w600));
+            shareFile();
+          }
         } else {
           Fluttertoast.showToast(
               msg: "No Image Selected.",
@@ -408,6 +437,107 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
         sendSelectImage();
         break;
     }
+  }
+
+  _openDialog(String type) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("PICTIK"),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                height: 75,
+                child: TextFormField(
+                  controller: edtPIN,
+                  scrollPadding: EdgeInsets.all(0),
+                  decoration: InputDecoration(
+                      border: new OutlineInputBorder(
+                          borderSide: new BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: Colors.black,
+                      ),
+                      hintText: "Enter PIN"),
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              new Text("Are You Sure You Want To Download/Share Images ?"),
+            ],
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("No",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+                if (edtPIN.text == SelectedPin) {
+                  Navigator.pop(context);
+                  setState(() {
+                    PinSelection = "true";
+
+                  });
+                  pr1 = new ProgressDialog(context,
+                      type: ProgressDialogType.Normal);
+                  pr1.style(
+                      message: "Please Wait",
+                      borderRadius: 10.0,
+                      progressWidget: Container(
+                        padding: EdgeInsets.all(15),
+                        child: CircularProgressIndicator(
+                          backgroundColor: cnst.appPrimaryMaterialColor,
+                        ),
+                      ),
+                      elevation: 10.0,
+                      insetAnimCurve: Curves.easeInOut,
+                      messageTextStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w600));
+
+                  if (type == "Share") {
+                    shareFile();
+                  } else {
+                    downloadAll();
+                  }
+                } else {
+                  Fluttertoast.showToast(
+                      msg: "Enter Valid PIN...",
+                      textColor: cnst.appPrimaryMaterialColor[700],
+                      backgroundColor: Colors.red,
+                      gravity: ToastGravity.CENTER,
+                      toastLength: Toast.LENGTH_SHORT);
+                }
+                print("PIN: ${edtPIN.text}");
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  getLocalData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      SelectedPin = preferences.getString(Session.SelectedPin);
+      PinSelection = preferences.getString(Session.PinSelection);
+    });
   }
 
   @override
@@ -441,7 +571,7 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                         builder: (context) =>
                             SelectedPhotoShow(allPhotos: albumData)));
               },
-              icon: Icon(Icons.play_arrow)),
+              icon: Icon(Icons.play_circle_outline,size: 30,)),
           selectedData.length > 0
               ? PopupMenuButton(
                   icon: Icon(Icons.more_vert),
@@ -505,25 +635,33 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                                 GestureDetector(
                                   onTap: () {
                                     if (selectedPhone.length > 0) {
-                                      pr1 = new ProgressDialog(context,
-                                          type: ProgressDialogType.Normal);
-                                      pr1.style(
-                                          message: "Please Wait",
-                                          borderRadius: 10.0,
-                                          progressWidget: Container(
-                                            padding: EdgeInsets.all(15),
-                                            child: CircularProgressIndicator(
-                                              backgroundColor:
-                                                  cnst.appPrimaryMaterialColor,
+                                      if (SelectedPin != "" &&
+                                          (PinSelection == "false" ||
+                                              PinSelection == "" ||
+                                              PinSelection.toString() ==
+                                                  "null")) {
+                                        _openDialog("Download");
+                                      } else {
+                                        pr1 = new ProgressDialog(context,
+                                            type: ProgressDialogType.Normal);
+                                        pr1.style(
+                                            message: "Please Wait",
+                                            borderRadius: 10.0,
+                                            progressWidget: Container(
+                                              padding: EdgeInsets.all(15),
+                                              child: CircularProgressIndicator(
+                                                backgroundColor: cnst
+                                                    .appPrimaryMaterialColor,
+                                              ),
                                             ),
-                                          ),
-                                          elevation: 10.0,
-                                          insetAnimCurve: Curves.easeInOut,
-                                          messageTextStyle: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17.0,
-                                              fontWeight: FontWeight.w600));
-                                      downloadAll();
+                                            elevation: 10.0,
+                                            insetAnimCurve: Curves.easeInOut,
+                                            messageTextStyle: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 17.0,
+                                                fontWeight: FontWeight.w600));
+                                        downloadAll();
+                                      }
                                     } else {
                                       Fluttertoast.showToast(
                                           msg: "No Image Selected.",
@@ -550,25 +688,33 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                                 GestureDetector(
                                   onTap: () {
                                     if (selectedPhone.length > 0) {
-                                      pr1 = new ProgressDialog(context,
-                                          type: ProgressDialogType.Normal);
-                                      pr1.style(
-                                          message: "Please Wait",
-                                          borderRadius: 10.0,
-                                          progressWidget: Container(
-                                            padding: EdgeInsets.all(15),
-                                            child: CircularProgressIndicator(
-                                              backgroundColor:
-                                                  cnst.appPrimaryMaterialColor,
+                                      if (SelectedPin != "" &&
+                                          (PinSelection == "false" ||
+                                              PinSelection == "" ||
+                                              PinSelection.toString() ==
+                                                  "null")) {
+                                        _openDialog("Share");
+                                      } else {
+                                        pr1 = new ProgressDialog(context,
+                                            type: ProgressDialogType.Normal);
+                                        pr1.style(
+                                            message: "Please Wait",
+                                            borderRadius: 10.0,
+                                            progressWidget: Container(
+                                              padding: EdgeInsets.all(15),
+                                              child: CircularProgressIndicator(
+                                                backgroundColor: cnst
+                                                    .appPrimaryMaterialColor,
+                                              ),
                                             ),
-                                          ),
-                                          elevation: 10.0,
-                                          insetAnimCurve: Curves.easeInOut,
-                                          messageTextStyle: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17.0,
-                                              fontWeight: FontWeight.w600));
-                                      shareFile();
+                                            elevation: 10.0,
+                                            insetAnimCurve: Curves.easeInOut,
+                                            messageTextStyle: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 17.0,
+                                                fontWeight: FontWeight.w600));
+                                        shareFile();
+                                      }
                                     } else {
                                       Fluttertoast.showToast(
                                           msg: "No Image Selected.",
@@ -600,45 +746,6 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                 ),
                 Expanded(
                   child: albumData.length != 0 && albumData != null
-                      /*? GridView.builder(
-                          padding: EdgeInsets.only(top: 5),
-                          itemCount: albumData.length,
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: MediaQuery.of(context)
-                                    .size
-                                    .width /
-                                (MediaQuery.of(context).size.height / 1.7),
-                          ),
-                          itemBuilder: (BuildContext context, int index) {
-                            return AllAlbumComponent(albumData[index], index,
-                                (action, Id) {
-                              if (action.toString() == "Show") {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ImageView(
-                                            albumData: albumData,
-                                            albumIndex: index)));
-                              } else if (action.toString() == "Remove") {
-                                int count = int.parse(selectedCount);
-                                count = count - 1;
-                                setState(() {
-                                  selectedCount = count.toString();
-                                });
-                                setNewArrayList(Id, "false");
-                              } else {
-                                int count = int.parse(selectedCount);
-                                count = count + 1;
-                                setState(() {
-                                  selectedCount = count.toString();
-                                });
-                                setNewArrayList(Id, "true");
-                              }
-                            });
-                          })*/
                       ? StaggeredGridView.countBuilder(
                           padding:
                               const EdgeInsets.only(left: 3, right: 3, top: 5),
@@ -654,7 +761,12 @@ class _AlbumAllImagesState extends State<AlbumAllImages> {
                                     MaterialPageRoute(
                                         builder: (context) => ImageView(
                                             albumData: albumData,
-                                            albumIndex: index)));
+                                            albumIndex: index,
+                                            onChange: (action) {
+                                              if(action=="getData"){
+                                                getLocalData();
+                                              }
+                                            })));
                               } else if (action.toString() == "Remove") {
                                 pr1 = new ProgressDialog(context,
                                     type: ProgressDialogType.Normal);

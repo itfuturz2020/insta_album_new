@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:insta_album_new/Screen/AdvertisemnetDetail.dart';
 import 'package:insta_album_new/Screen/Dashboard.dart';
 import 'package:insta_album_new/Screen/GuestDashboard.dart';
 import 'package:insta_album_new/Screen/Login.dart';
@@ -65,7 +66,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Photo Cloud',
+      title: 'PICTIK',
       initialRoute: '/',
       routes: {
         '/': (context) => Splash(),
