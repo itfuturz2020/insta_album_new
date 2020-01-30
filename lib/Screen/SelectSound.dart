@@ -92,6 +92,9 @@ class _SelectSoundState extends State<SelectSound> {
               Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back, color: Colors.black)),
+        /*actions: <Widget>[
+          PlayerWidget(url: "http://instaalbum.itfuturz.com/Sound/BGTrack2.mp3"),
+        ],*/
       ),
       body: isLoading
           ? LoadinComponent()
