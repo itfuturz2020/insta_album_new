@@ -156,6 +156,6 @@ class _AboutUsState extends State<AboutUs> {
         ),
       )
           : NoDataComponent(),
-        ), onWillPop: (){ onWillPop();});
+        ), onWillPop: onWillPop);
   }
 }

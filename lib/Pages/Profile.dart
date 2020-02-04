@@ -50,9 +50,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        onWillPop();
-      },
+      onWillPop: onWillPop,
       child: Container(
         width: MediaQuery.of(context).size.width,
         child: Column(

@@ -235,9 +235,7 @@ class _CustomerGalleryState extends State<CustomerGallery> {
         ],
       ),
       body: WillPopScope(
-        onWillPop: () {
-          onWillPop();
-        },
+        onWillPop: onWillPop,
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,

@@ -115,6 +115,6 @@ class _NotificationPageState extends State<NotificationPage> {
         },
       )
           : NoDataComponent(),
-    ), onWillPop: (){ onWillPop();});
+    ), onWillPop: onWillPop);
   }
 }

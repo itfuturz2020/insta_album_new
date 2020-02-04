@@ -31,7 +31,8 @@ class _AdvertisemnetDetailState extends State<AdvertisemnetDetail> {
   Set<Marker> markers = Set();
 
   var AdverDetails;
-  List PhotoList=new List();
+  List PhotoList = new List();
+
   /*static const String beeUri =
       'http://vfx.mtime.cn/Video/2019/03/09/mp4/190309153658147087.mp4';
 
@@ -47,9 +48,9 @@ class _AdvertisemnetDetailState extends State<AdvertisemnetDetail> {
       Marker(
           markerId: MarkerId('value'),
           position: LatLng(21.1408283, 72.8030316)),
-      *//*Marker(
+      */ /*Marker(
           markerId: MarkerId('value2'),
-          position: LatLng(21.141474, 72.840138)),*//*
+          position: LatLng(21.141474, 72.840138)),*/ /*
     ]);*/
     callMethod();
     //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
@@ -127,25 +128,27 @@ class _AdvertisemnetDetailState extends State<AdvertisemnetDetail> {
     });
   }
 
-  setData(List data) async{
+  setData(List data) async {
     setState(() {
-      AdverDetails=data[0]["Advertisement"];
-      PhotoList=data[0]["PhotoList"];
+      AdverDetails = data[0]["Advertisement"];
+      PhotoList = data[0]["PhotoList"];
       var file = data[0]["Advertisement"]["Location"].split(',');
 
       print(data[0]["Advertisement"]["Location"]);
       markers.addAll([
         Marker(
             markerId: MarkerId('value'),
-            position: LatLng(double.parse(file[0].toString()),double.parse(file[1].toString()))),
+            position: LatLng(double.parse(file[0].toString()),
+                double.parse(file[1].toString()))),
         /*Marker(
           markerId: MarkerId('value2'),
           position: LatLng(21.141474, 72.840138)),*/
       ]);
 
-      isLoading=false;
+      isLoading = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +158,7 @@ class _AdvertisemnetDetailState extends State<AdvertisemnetDetail> {
       body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: isLoading==false
+          child: isLoading == false
               ? _advertisementData.length > 0
                   ? SingleChildScrollView(
                       child: Column(
@@ -237,32 +240,36 @@ class _AdvertisemnetDetailState extends State<AdvertisemnetDetail> {
                                     ],
                                   ),
                                 ),
-                                PhotoList.length>0?CarouselSlider.builder(
-                                  height: 170,
-                                  viewportFraction: 1.0,
-                                  autoPlayAnimationDuration:
-                                      Duration(milliseconds: 1500),
-                                  reverse: false,
-                                  autoPlayCurve: Curves.fastOutSlowIn,
-                                  autoPlay: true,
-                                  itemCount: PhotoList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int itemIndex) {
-                                    return Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 7),
-                                        child: FadeInImage.assetNetwork(
-                                          placeholder: 'assets/loading.gif',
-                                          image: cnst.ImgUrl +
-                                              PhotoList[itemIndex]["Photo"],
-                                          fit: BoxFit.fill,
-                                          width:
-                                          MediaQuery.of(context).size.width,
-                                          height: 170,
-                                        )
-                                    );
-                                  },
-                                ):Container(),
+                                PhotoList.length > 0
+                                    ? CarouselSlider.builder(
+                                        height: 170,
+                                        viewportFraction: 1.0,
+                                        autoPlayAnimationDuration:
+                                            Duration(milliseconds: 1500),
+                                        reverse: false,
+                                        autoPlayCurve: Curves.fastOutSlowIn,
+                                        autoPlay: true,
+                                        itemCount: PhotoList.length,
+                                        itemBuilder: (BuildContext context,
+                                            int itemIndex) {
+                                          return Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 7),
+                                              child: FadeInImage.assetNetwork(
+                                                placeholder:
+                                                    'assets/loading.gif',
+                                                image: cnst.ImgUrl +
+                                                    PhotoList[itemIndex]
+                                                        ["Photo"],
+                                                fit: BoxFit.fill,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                height: 170,
+                                              ));
+                                        },
+                                      )
+                                    : Container(),
                                 /*Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Stack(children: [
