@@ -104,6 +104,7 @@ class _AddCustomerState extends State<AddCustomer> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         pr.show();
         _selectedContact.clear();
+        SharedPreferences prefs = await SharedPreferences.getInstance();
         _selectedContact.add({
           "Id": 0,
           "ParentId": parentId.toString() == "null" || parentId == "0"
@@ -112,7 +113,8 @@ class _AddCustomerState extends State<AddCustomer> {
           "Name": "${txtName.text}",
           "Mobile": "${txtMobile.text}",
           "Type": 'Member',
-          "InviteStatus":'Pending'
+          "StudioId": '${prefs.getString(Session.StudioId)}',
+          "InviteStatus": 'Pending'
         });
         Services.AddCustomer(_selectedContact).then((data) async {
           pr.hide();
