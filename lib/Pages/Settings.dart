@@ -161,6 +161,7 @@ class _SlideShowState extends State<SlideShow> {
                 _value = newValue;
                 print("selected value: ${_value}");
               });
+
             },
           ),
           Text("${_value} Seconds")
