@@ -6,17 +6,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:insta_album_new/Pages/Settings.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:insta_album_new/Common/Services.dart';
 import 'package:insta_album_new/Pages/AboutUs.dart';
-import 'package:insta_album_new/Screen/CustomerGalleryScreen.dart';
-import 'package:insta_album_new/Pages/Home.dart';
-import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Pages/NotificationPage.dart';
 import 'package:insta_album_new/Pages/Profile.dart';
+import 'package:insta_album_new/Pages/Settings.dart';
 import 'package:insta_album_new/Screen/AnimatedBottomBar.dart';
+import 'package:insta_album_new/Screen/CustomerGalleryScreen.dart';
 import 'package:insta_album_new/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
   @override

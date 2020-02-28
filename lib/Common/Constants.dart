@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 const String API_URL = "http://instaalbum.itfuturz.com/api/AppAPI/";
-const String ImgUrl = "http://insta"
-    "album.itfuturz.com/";
+const String ImgUrl = "http://instaalbum.itfuturz.com/";
 //const String API_URL = "${cnst.ImgUrl}api/AppAPI/";
 //const String API_URL = "http://thestudioom.itfuturz.com/AppAPI/";
 const Inr_Rupee = "₹";
@@ -78,5 +77,7 @@ class Session{
   static const String CommitieId = "CommitieId";
   static const String SlideShowSpeed = "SlideShowSpeed";
   static const String PlayMusic = "PlayMusic";
+  static const String MusicURLId = "MusicURLId";
   static const String MusicURL = "MusicURL";
+  static const String SlideTime = "SlideTime";
 }

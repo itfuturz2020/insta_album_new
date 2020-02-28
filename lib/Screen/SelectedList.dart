@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:insta_album_new/Common/Constants.dart';
-import 'package:insta_album_new/Screen/SelectedPhotoShow.dart';
-import 'package:progress_dialog/progress_dialog.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:insta_album_new/Common/Services.dart';
 import 'package:insta_album_new/Components/NoDataComponent.dart';
 import 'package:insta_album_new/Components/SelectedAlbumComponent.dart';
 import 'package:insta_album_new/Screen/SelectedAlbum.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ImageView.dart';
@@ -247,16 +246,6 @@ class _SelectedListState extends State<SelectedList> {
           ),
         ),
         actions: <Widget>[
-          IconButton(
-              onPressed: () {
-                //selectedPhone
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SelectedPhotoShow(allPhotos: albumData)));
-              },
-              icon: Icon(Icons.play_circle_outline,size: 30,)),
           selectedData.length > 0
               ? Padding(
                   padding: const EdgeInsets.all(10),
@@ -385,8 +374,7 @@ class _SelectedListState extends State<SelectedList> {
                                             albumData: albumData,
                                             albumIndex: index,
                                             onChange: (action) {
-                                              if(action=="getData"){
-                                              }
+                                              if (action == "getData") {}
                                             })));
                               } else if (action.toString() == "Remove") {
                                 int count = int.parse(selectedCount);

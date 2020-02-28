@@ -526,16 +526,6 @@ class _PendingListState extends State<PendingList> {
           ),
         ),
         actions: <Widget>[
-          IconButton(
-              onPressed: () {
-                //selectedPhone
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SelectedPhotoShow(allPhotos: albumData)));
-              },
-              icon: Icon(Icons.play_circle_outline,size: 30,)),
           selectedData.length > 0
               ? PopupMenuButton(
                   icon: Icon(Icons.more_vert),

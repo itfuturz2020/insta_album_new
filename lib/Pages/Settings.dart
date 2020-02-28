@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:insta_album_new/Common/Constants.dart' as cnst;
 import 'package:progress_dialog/progress_dialog.dart';
@@ -48,38 +46,9 @@ class _SettingsState extends State<Settings> {
   _showSpeedDialog() {
     return showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Speed"),
-          content: Column(
-            children: <Widget>[
-              Text("Speed"),
-            ],
-          ),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            FlatButton(
-              child: Text("Close",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child: Text("Ok",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+        return SlideShow();
       },
     );
   }
@@ -138,5 +107,88 @@ class _SettingsState extends State<Settings> {
         ],
       ),
     ));
+  }
+}
+
+class SlideShow extends StatefulWidget {
+  @override
+  _SlideShowState createState() => _SlideShowState();
+}
+
+class _SlideShowState extends State<SlideShow> {
+  double _value;
+
+  @override
+  void initState() {
+    getLocal();
+  }
+
+  getLocal() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      if (prefs.getString(cnst.Session.SlideShowSpeed) == "" ||
+          prefs.getString(cnst.Session.SlideShowSpeed) == null) {
+        _value = 1.5;
+      } else {
+        _value = double.parse(prefs.getString(cnst.Session.SlideShowSpeed));
+      }
+    });
+  }
+
+  setSlideShowTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //String CustomerId = prefs.getString(Session.CustomerId);
+    prefs.setString(cnst.Session.SlideShowSpeed, _value.toString());
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Slide Show Speed"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Slider(
+            value: _value,
+            min: 0.5,
+            max: 5.0,
+            divisions: 9,
+            label: 'Slide Show Speed',
+            onChanged: (double newValue) {
+              setState(() {
+                _value = newValue;
+                print("selected value: ${_value}");
+              });
+            },
+          ),
+          Text("${_value} Seconds")
+        ],
+      ),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        FlatButton(
+          child: Text("Close",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600)),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text("Ok",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600)),
+          onPressed: () {
+            setSlideShowTime();
+          },
+        ),
+      ],
+    );
   }
 }
